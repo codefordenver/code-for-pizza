@@ -23,23 +23,32 @@
 (defn total-display [pizzas type]
   (let [total-calc (* ((keyword type) sizes) pizzas)
         _ (reset! total total-calc)]
-    [:p {:style {:color "red"}}
-     (str "you should need # " @total)]))
+    [:p {:class "order-result"}
+     (str "Order " @total " " @selection " pizzas!")]))
   
 (defn number-input []
     [:input {:type "number"
              :on-change #(reset! number (-> % .-target .-value))}])
 
 (defn parent []
-  [:div 
-   [:pre "--- \n" 
-    "number::" @number "\n"
-    "selection::" @selection "\n"
-    "total::" @total "\n ----"]
-   [number-input]
-   [size-selection]
+  [:div {:class "main-wrapper"}
+    [:header
+      [:img {:src "../assets/pizza.png"}]
+      [:h1 "Code for Pizza"]
+      [:img {:src "../assets/pizza.png"}]
+    ]
+    [:div
+     [:p "How many people are you feeding?"] 
+     [number-input]
+    ]
+    [:div
+     [:p "What size of pizza would you like?"]
+     [size-selection]
+    ]
+   [:div {:class "result-statement"} 
+    "If you have " [:span {:class "number"} @number " people" ] " to feed," "\n"
+    "then you need " [:span {:class "number"} @total " " @selection " pizzas!"]]
    [total-display @number @selection]])
 
 
 (r/render-component [parent] (.querySelector js/document "#content"))
-
