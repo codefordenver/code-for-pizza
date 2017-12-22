@@ -5,7 +5,7 @@
                   [adzerk/boot-reload "0.5.2" :scope "test"]
                   [pandeiro/boot-http "0.8.3" :scope "test"
                    :exclusions [org.clojure/clojure]]
-                  [nightlight "1.9.2"]
+                  [nightlight "2.0.4"]
                   [org.clojure/clojurescript "1.9.946"]
                   [reagent "0.7.0"]])
 
@@ -30,5 +30,6 @@
     (nightlight :port 4000 :url "http://localhost:3000")))
 
 (deftask build []
-  (comp (cljs :optimizations :advanced) (target)))
+  (comp (cljs :optimizations :advanced) (target))
+  (sift :move  {#"/assets/pizza.png" "target/nightcoders/pizza.png" }))
 

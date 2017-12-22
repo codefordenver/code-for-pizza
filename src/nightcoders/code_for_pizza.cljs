@@ -35,41 +35,54 @@
 (def total-charge (r/atom 0))
 
 (defn total-charge-input []  
-  [:input {:label "total-charge" :type "number"           
-           :on-change #(reset! total-charge (-> % .-target .-value))}])
+  [:input {:label "total-charge" 
+           :type "number"           
+           :on-change 
+           (fn [e]
+             (let [num (js/parseFloat (-> e .-target .-value))]
+               (if (js/isNaN num)
+                 (reset! total-charge 0)
+                 (reset! total-charge num))))}])
 
 (defn tip-percent-input []  
   [:input {:label "tip-percent" :type "number"           
            :on-change 
-           (fn [e] 
-             (js/console.log (-> e .-target .-value))
-             (reset! tip-percent (-> e .-target .-value)))}])
+           (fn [e]
+             (let [num (js/parseFloat (-> e .-target .-value))]
+               (if (js/isNaN num)
+                 (reset! tip-percent 0)
+                 (reset! tip-percent num))))}])
 
 ;(defn calc-tip-a [total-charge tip-percent])
 ;   (gstring/format "%.2f" (* total-charge (/ tip-percent 100)))
 
-(defn calc-tip [total tip]   
-  (/ (.round js/Math 
-       (* 100 (* (js/parseFloat total) (/ (js/parseFloat tip) 100)))) 100))
+(defn calc-tip [total tip]
+  (/ (js/Math.round (* 100 (* total (/ tip 100)))) 
+     100))
 
 (defn sub-total [total tip]  
-  (/ (.round js/Math
-       (* 100 (+ (calc-tip total tip) (js/parseFloat total)))) 100))
+  (/ (js/Math.round (* 100 (+ (calc-tip total tip) total))) 
+     100))
 
 (defn make-even-total [total tip]
   (+ 1 (- (sub-total total tip) (js-mod (sub-total total tip) 1))))
 
-(defn calc-actual-tip [total tip]
- (/ (.round js/Math  
-      (* 100 (- (make-even-total total tip) (js/parseFloat total)))) 100)) 
+(defn calc-actual-tip-percent [total tip]
+ (/ (js/Math.round (* 100 
+                      (* 100 
+                         (/ (- (make-even-total total tip) (js/parseFloat total))
+                            (js/parseFloat total))))) 
+    100)) 
 
   
 (defn parent []
   [:div {:class "main-wrapper"}
     [:header
-      [:img {:src "../assets/pizza.png"}]
-      [:h1 "Code for Pizza"]
-      [:img {:src "../assets/pizza.png"}]]
+     [:div
+      [:img {:class "cfd-logo" :src "https://pbs.twimg.com/profile_images/712092996938833920/37hddklS.jpg"}]]
+     [:img {:src "../assets/pizza.png"}]
+     [:h1 "Code for Pizzayyyyyy"]
+     [:img {:src "../assets/pizza.png"}]]
 
     [:div
      [:p "How many people are you feeding?"] 
@@ -90,9 +103,7 @@
    
    [:div
     [:p "Tip in %"]
-    [tip-percent-input]];(* 100 (/ (- (make-even-total total tip) (js/parseFloat total))
-  ;          (make-even-total total tip))
-
+    [tip-percent-input]]
    
    [:div
     [:p "Tip is $"
@@ -107,8 +118,8 @@
      (make-even-total @total-charge @tip-percent)]]
    
    [:div
-    [:p "Now the tip is $"
-     (calc-actual-tip @total-charge @tip-percent)]]])
+    [:p "Now the tip is "
+     (calc-actual-tip-percent @total-charge @tip-percent) "%"]]])
 
     
 
