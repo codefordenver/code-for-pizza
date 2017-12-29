@@ -1,1 +1,1 @@
-{:require [nightcoders.code-for-pizza nightlight.repl-server], :init-fns [], :compiler-options {:infer-externs true}}
+{:require [cljs.nightcoders.core nightlight.repl-server], :init-fns [], :compiler-options {:infer-externs true}}

@@ -1,6 +1,5 @@
-(ns nightcoders.code-for-pizza
+(ns cljs.nightcoders.pizza
   (:require [reagent.core :as r]))
-
 
 (def total (r/atom 0))
 
@@ -22,8 +21,8 @@
    [:option {:value "XLARGE"} "XLARGE"]])
 
 (defn total-display [pizzas type]
-  (let [total-calc (* ((keyword type) sizes) pizzas)
-        _ (reset! total total-calc)]
+  (let [total-calc (* ((keyword type) sizes) pizzas)]
+    (reset! total total-calc)
     [:p {:class "order-result"}
      (str "Order " @total " " @selection " pizzas!")]))
 
@@ -56,6 +55,7 @@
 (defn calc-tip [total tip]
   (/ (js/Math.round (* 100 (* total (/ tip 100))))
      100))
+
 (defn sub-total [total tip]
   (/ (js/Math.round (* 100 (+ (calc-tip total tip) total)))
      100))
@@ -72,12 +72,11 @@
       100)
    0))
 
-
-(defn parent []
+(defn main []
   [:div {:class "main-wrapper"}
     [:header
      [:div
-      [:img {:class "cfd-logo" :src "https://pbs.twimg.com/profile_images/712092996938833920/37hddklS.jpg"}]]
+      [:img {:class "cfd-logo" :src "images/cfd.jpg"}]]
      [:img {:src "images/pizza.png"}]
      [:h1 "Code for Pizzayyyyyy"]
      [:img {:src "images/pizza.png"}]]
@@ -118,9 +117,3 @@
    [:div
     [:p "Now the tip is "
      (calc-actual-tip-percent @total-charge @tip-percent) "%"]]])
-
-
-
-
-
-(r/render-component [parent] (.querySelector js/document "#content"))
