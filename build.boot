@@ -32,8 +32,7 @@
     (nightlight :port 4000 :url "http://localhost:3000")))
 
 (deftask build []
-  (comp (cljs :optimizations :advanced) (target))
-  (sift :move  {#"/assets/pizza.png" "target/nightcoders/pizza.png" }))
+  (comp (cljs :optimizations :advanced) (target)))
 
 (deftask testing []
   (set-env! :source-paths #(conj % "test/cljs"))

@@ -15,6 +15,11 @@
 
 - `boot run`
 
+
+## BUILDING FOR PROD
+
+- `boot build`
+
 ## TESTING 
 
 - `boot test`

@@ -53,9 +53,6 @@
                  (reset! tip-percent 0)
                  (reset! tip-percent num))))}])
 
-;(defn calc-tip-a [total-charge tip-percent])
-;   (gstring/format "%.2f" (* total-charge (/ tip-percent 100)))
-
 (defn calc-tip [total tip]
   (/ (js/Math.round (* 100 (* total (/ tip 100))))
      100))
