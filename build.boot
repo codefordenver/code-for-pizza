@@ -1,7 +1,8 @@
 (set-env!
-  :source-paths #{"src"}
-  :resource-paths #{"src" "resources"}
-  :dependencies '[[adzerk/boot-cljs "2.1.4" :scope "test"]
+  :source-paths #{"src/cljs"}
+  :resource-paths #{"resources"}
+  :dependencies '[[crisptrutski/boot-cljs-test "0.3.5-SNAPSHOT"]
+                  [adzerk/boot-cljs "2.1.4" :scope "test"]
                   [adzerk/boot-reload "0.5.2" :scope "test"]
                   [pandeiro/boot-http "0.8.3" :scope "test"
                    :exclusions [org.clojure/clojure]]
@@ -13,23 +14,44 @@
   '[adzerk.boot-cljs :refer [cljs]]
   '[adzerk.boot-reload :refer [reload]]
   '[pandeiro.boot-http :refer [serve]]
-  '[nightlight.boot :refer [nightlight sandbox]])
+  '[nightlight.boot :refer [nightlight sandbox]]
+  '[crisptrutski.boot-cljs-test :refer [test-cljs]])
 
 (deftask dev []
   (comp
     (watch)
-    (reload :asset-path "nightcoders" :cljs-asset-path ".")
+    (reload)
     (sandbox :file "java.policy")
-    (cljs :source-map true :optimizations :none :compiler-options {:asset-path "main.out"})
+    (cljs :source-map true :optimizations :none)
     (target)))
 
 (deftask run []
   (comp
-    (serve :dir "target/nightcoders" :port 3000)
+    (serve :port 3000)
     (dev)
     (nightlight :port 4000 :url "http://localhost:3000")))
 
 (deftask build []
   (comp (cljs :optimizations :advanced) (target))
   (sift :move  {#"/assets/pizza.png" "target/nightcoders/pizza.png" }))
+
+(deftask testing []
+  (set-env! :source-paths #(conj % "test/cljs"))
+  identity)
+
+;;; This prevents a name collision WARNING between the test task and
+;;; clojure.core/test, a function that nobody really uses or cares
+;;; about.
+
+(ns-unmap 'boot.user 'test)
+
+(deftask test []
+  (comp (testing)
+        (test-cljs :js-env :phantom
+                   :exit?  true)))
+
+(deftask auto-test []
+  (comp (testing)
+        (watch)
+        (test-cljs :js-env :phantom)))
 
