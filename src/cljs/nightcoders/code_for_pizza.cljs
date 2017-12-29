@@ -81,9 +81,9 @@
     [:header
      [:div
       [:img {:class "cfd-logo" :src "https://pbs.twimg.com/profile_images/712092996938833920/37hddklS.jpg"}]]
-     [:img {:src "../assets/pizza.png"}]
+     [:img {:src "images/pizza.png"}]
      [:h1 "Code for Pizzayyyyyy"]
-     [:img {:src "../assets/pizza.png"}]]
+     [:img {:src "images/pizza.png"}]]
 
     [:div
      [:p "How many people are you feeding?"]
