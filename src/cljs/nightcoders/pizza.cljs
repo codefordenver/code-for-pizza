@@ -47,6 +47,11 @@
                  (reset! tip-percent 0)
                  (reset! tip-percent num))))}])
 
+(defn total-charge-display [pizzas num]
+  (let [total-calc (* @price-per-pie num)]
+    (reset! total-charge total-calc)
+    [:span (str @total-charge)]))
+
 (defn  price-per-pie-input []
   [:input {:label "price-per-pie"
            :type "number"
@@ -107,7 +112,7 @@
    [total-display @number @selection]
 
    [:div
-    [:p "Total $" @total-charge]]
+    [:p "Total $" [total-charge-display @price-per-pie @total]]]
 
    [:div
     [:p "Tip in %"]
