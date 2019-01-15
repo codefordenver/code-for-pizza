@@ -9,7 +9,7 @@
 
 (def default-price-per-pie 10)
 
-(def price-per-pie (r/atom 0))
+(def price-per-pie (r/atom default-price-per-pie))
 
 (def sizes {:SMALL 0.5
             :MEDIUM 0.4
@@ -55,14 +55,15 @@
 (defn  price-per-pie-input []
   [:input {:label "price-per-pie"
            :type "number"
+           :default-value default-price-per-pie
            :on-change
            (fn [e]
              (let [num (js/parseFloat (-> e .-target .-value))
                    new-total (* @total num)]
-                 (if (js/isNaN num)
-                   (reset! price-per-pie @default-price-per-pie)
-                   (reset! price-per-pie num))
-                 (reset! total-charge new-total)))}])
+               (if (js/isNaN num)
+                 (reset! price-per-pie @default-price-per-pie)
+                 (reset! price-per-pie num))
+               (reset! total-charge new-total)))}])
 
 (defn calc-tip [total tip]
   (/ (js/Math.round (* 100 (* total (/ tip 100))))
