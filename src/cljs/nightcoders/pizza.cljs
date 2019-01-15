@@ -7,6 +7,10 @@
 
 (def number (r/atom 0))
 
+(def default-price-per-pie 10)
+
+(def price-per-pie (r/atom default-price-per-pie))
+
 (def sizes {:SMALL 0.5
             :MEDIUM 0.4
             :LARGE 0.3
@@ -33,28 +37,38 @@
 (def tip-percent (r/atom 0))
 (def total-charge (r/atom 0))
 
-(defn total-charge-input []
-  [:input {:label "total-charge"
-           :type "number"
-           :on-change
-           (fn [e]
-             (let [num (js/parseFloat (-> e .-target .-value))]
-               (if (js/isNaN num)
-                 (reset! total-charge 0)
-                 (reset! total-charge num))))}])
-
 (defn tip-percent-input []
   [:input {:label "tip-percent" :type "number"
            :on-change
            (fn [e]
+
              (let [num (js/parseFloat (-> e .-target .-value))]
                (if (js/isNaN num)
                  (reset! tip-percent 0)
                  (reset! tip-percent num))))}])
 
+(defn total-charge-display [pizzas num]
+  (let [total-calc (* @price-per-pie num)]
+    (reset! total-charge total-calc)
+    [:span (str @total-charge)]))
+
+(defn  price-per-pie-input []
+  [:input {:label "price-per-pie"
+           :type "number"
+           :default-value default-price-per-pie
+           :on-change
+           (fn [e]
+             (let [num (js/parseFloat (-> e .-target .-value))
+                   new-total (* @total num)]
+               (if (js/isNaN num)
+                 (reset! price-per-pie @default-price-per-pie)
+                 (reset! price-per-pie num))
+               (reset! total-charge new-total)))}])
+
 (defn calc-tip [total tip]
   (/ (js/Math.round (* 100 (* total (/ tip 100))))
      100))
+
 
 (defn sub-total [total tip]
   (/ (js/Math.round (* 100 (+ (calc-tip total tip) total)))
@@ -74,20 +88,24 @@
 
 (defn main []
   [:div {:class "main-wrapper"}
-    [:header
-     [:div
-      [:img {:class "cfd-logo" :src "images/cfd.jpg"}]]
-     [:img {:src "images/pizza.png"}]
-     [:h1 "Code for Pizzayyyyyy"]
-     [:img {:src "images/pizza.png"}]]
-
+   [:header
     [:div
-     [:p "How many people are you feeding?"]
-     [number-input]]
+     [:img {:class "cfd-logo" :src "images/cfd.jpg"}]]
+    [:img {:src "images/pizza.png"}]
+    [:h1 "Code for Pizzayyyyyy"]
+    [:img {:src "images/pizza.png"}]]
 
-    [:div
-     [:p "What size of pizza would you like?"]
-     [size-selection]]
+   [:div
+    [:p "How many people are you feeding?"]
+    [number-input]]
+
+   [:div
+    [:p "What size of pizza would you like?"]
+    [size-selection]]
+   
+   [:div
+    [:p "How much does each pie cost?"]
+     [price-per-pie-input]]
 
    [:div {:class "result-statement"}
     "If you have " [:span {:class "number"} @number " people" ] " to feed," "\n"
@@ -95,8 +113,7 @@
    [total-display @number @selection]
 
    [:div
-    [:p "Total $"]
-    [total-charge-input]]
+    [:p "Total $" [total-charge-display @price-per-pie @total]]]
 
    [:div
     [:p "Tip in %"]
